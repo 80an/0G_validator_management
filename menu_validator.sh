@@ -45,13 +45,15 @@ check_for_updates() {
   fi
 }
 
-# Проверка наличия обновлений перед запуском меню валидатора
-check_for_updates
-
 MONITOR_PID_FILE="$HOME/.validator_config/monitor_validator.pid"
 PROPOSAL_PID_FILE="$HOME/.validator_config/monitor_proposals.pid"
 
 while true; do
+clear  # Очистка экрана
+
+  # Выполняем проверку актуальности программы перед выводом меню
+  check_for_updates
+  
   echo
   echo -e "${B_GREEN}========= 📋 Меню управления валидатором =========${NO_COLOR}"
   echo -e "1) ${B_YELLOW}💰${NO_COLOR} Забрать комиссии и реварды валидатора"

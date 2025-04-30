@@ -61,5 +61,8 @@ chmod +x "$HOME/bin/validator"
 
 echo ""
 echo "✅ Настройка завершена."
+sleep 10
+clear
 echo "Теперь вы можете запускать меню в любой момент командой:"
 echo "    validator"
+echo ""
