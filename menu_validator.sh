@@ -26,17 +26,12 @@ fi
 
 # Функция проверки изменений в папке 0g/Validator на сервере и GitHub
 check_for_updates() {
-  cd "$HOME/0g" || return
+  # Указываем путь к правильной директории
+  cd "$HOME/0g/Validator" || return
 
-  # Проверка, находимся ли мы внутри git-репозитория
   if git rev-parse --is-inside-work-tree &>/dev/null; then
-    # Получаем обновления из удалённого репозитория
     git fetch origin main &>/dev/null
-
-    # Проверяем изменения только в папке Validator
-    changes=$(git diff --stat origin/main -- Validator)
-
-    if [ -n "$changes" ]; then
+    if ! git diff --quiet origin/main -- .; then
       echo -e "${B_YELLOW}⚠️ Обнаружены изменения в папке 0g/Validator. Рекомендуется обновить программу.${NO_COLOR}"
       echo -e "${B_YELLOW}Для этого запустите скрипт техменю${NO_COLOR}"
       echo -e "source <(wget -qO- 'https://raw.githubusercontent.com/80an/Nodes/refs/heads/main/0g/Validator/tech_menu.sh')"
@@ -46,10 +41,9 @@ check_for_updates() {
       echo -e "${B_GREEN}✅ Все файлы актуальны в папке 0g/Validator, изменений не обнаружено.${NO_COLOR}"
     fi
   else
-    echo -e "${B_RED}❌${NO_COLOR} Ошибка: Не удалось найти git-репозиторий в $HOME/0g."
+    echo "${B_RED}❌${NO_COLOR} Ошибка: не найден git-репозиторий в $HOME/0g/Validator."
   fi
 }
-
 
 # Проверка наличия обновлений перед запуском меню валидатора
 check_for_updates
