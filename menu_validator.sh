@@ -14,13 +14,13 @@ if [ -f "$ENV_FILE" ]; then
   source "$ENV_FILE"
   set +o allexport
 else
-  echo "${B_RED}❌${NO_COLOR} Не найден файл $ENV_FILE. Пожалуйста, сначала запустите setup_per.sh."
+  echo -e "${B_RED}❌${NO_COLOR} Не найден файл $ENV_FILE. Пожалуйста, сначала запустите setup_per.sh."
   exit 1
 fi
 
 # Проверка основных переменных
 if [[ -z "${KEYRING_PASSWORD// }" || -z "${WALLET_NAME// }" || -z "${VALIDATOR_ADDRESS// }" ]]; then
-  echo "${B_RED}❌${NO_COLOR} Необходимые переменные не загружены. Пожалуйста, сначала запустите setup_per.sh."
+  echo -e "${B_RED}❌${NO_COLOR} Необходимые переменные не загружены. Пожалуйста, сначала запустите setup_per.sh."
   exit 1
 fi
 
@@ -28,9 +28,15 @@ fi
 check_for_updates() {
   cd "$HOME/0g" || return
 
+  # Проверка, находимся ли мы внутри git-репозитория
   if git rev-parse --is-inside-work-tree &>/dev/null; then
+    # Получаем обновления из удалённого репозитория
     git fetch origin main &>/dev/null
-    if ! git diff --quiet origin/main -- Validator; then
+
+    # Проверяем изменения только в папке Validator
+    changes=$(git diff --stat origin/main -- Validator)
+
+    if [ -n "$changes" ]; then
       echo -e "${B_YELLOW}⚠️ Обнаружены изменения в папке 0g/Validator. Рекомендуется обновить программу.${NO_COLOR}"
       echo -e "${B_YELLOW}Для этого запустите скрипт техменю${NO_COLOR}"
       echo -e "source <(wget -qO- 'https://raw.githubusercontent.com/80an/Nodes/refs/heads/main/0g/Validator/tech_menu.sh')"
@@ -39,29 +45,11 @@ check_for_updates() {
     else
       echo -e "${B_GREEN}✅ Все файлы актуальны в папке 0g/Validator, изменений не обнаружено.${NO_COLOR}"
     fi
+  else
+    echo -e "${B_RED}❌${NO_COLOR} Ошибка: Не удалось найти git-репозиторий в $HOME/0g."
   fi
 }
 
-#check_for_updates() {
-#  # Переходим в директорию с программой
-#  cd "$HOME/0g" || { echo "${B_RED}❌${NO_COLOR} Ошибка доступа к директории с программой"; exit 1; }
-
-#  # Обновляем информацию о репозитории
-#  git fetch --quiet
-
-#  # Сравниваем только папку 0g/Validator
-#  local changes=$(git diff --stat origin/main -- Validator)
-
-#  if [ -n "$changes" ]; then
-#    echo -e "${B_YELLOW}⚠️ Обнаружены изменения в папке 0g/Validator. Рекомендуется обновить программу.${NO_COLOR}"
-#    echo -e "${B_YELLOW}Для этого запустите скрипт техменю${NO_COLOR}"
-#    echo -e "source <(wget -qO- 'https://raw.githubusercontent.com/80an/Nodes/refs/heads/main/0g/Validator/tech_menu.sh')"
-#    echo -e "${B_YELLOW}и выберите пункт меню 'Установка / обновление программы'.${NO_COLOR}"
-#    sleep 10
-#  else
-#    echo -e "${B_GREEN}✅ Все файлы актуальны в папке 0g/Validator, изменений не обнаружено.${NO_COLOR}"
-#  fi
-#}
 
 # Проверка наличия обновлений перед запуском меню валидатора
 check_for_updates
@@ -86,7 +74,7 @@ while true; do
 
   case $choice in
     1)
-      echo "${B_YELLOW}💰${NO_COLOR} Забрать комиссии и реварды валидатора"
+      echo -e "${B_YELLOW}💰${NO_COLOR} Забрать комиссии и реварды валидатора"
       echo "$KEYRING_PASSWORD" | 0gchaind tx distribution withdraw-rewards "$VALIDATOR_ADDRESS" \
         --chain-id="zgtendermint_16600-2" \
         --from "$WALLET_NAME" \
@@ -97,11 +85,11 @@ while true; do
         -y
       ;;
     2)
-      echo "${B_GREEN}💸${NO_COLOR} Забрать все реварды со всех кошельков"
+      echo -e "${B_GREEN}💸${NO_COLOR} Забрать все реварды со всех кошельков"
       source "$HOME/0g/Validator/all_reward.sh"
       ;;
     3)
-      echo "${B_PURPLE}📥${NO_COLOR} Делегировать со всех кошельков в своего валидатора"
+      echo -e "${B_PURPLE}📥${NO_COLOR} Делегировать со всех кошельков в своего валидатора"
       source "$HOME/0g/Validator/all_delegation.sh"
       ;;
     4)
@@ -116,7 +104,7 @@ while true; do
       validator
       
       fi
-        echo "${B_CYAN}🗳${NO_COLOR} Голосование по пропозалу"
+        echo -e "${B_CYAN}🗳${NO_COLOR} Голосование по пропозалу"
         read -p "Введите номер пропозала: " proposal
         read -p "Введите ваш голос (yes/no/abstain/no_with_veto): " vote
         echo "$KEYRING_PASSWORD" | 0gchaind tx gov vote "$proposal" "$vote" \
@@ -212,7 +200,7 @@ while true; do
               echo "$MONITOR_PID" > "$MONITOR_PID_FILE"
               echo "✅ Мониторинг запущен. PID сохранён в $MONITOR_PID_FILE"
             else
-              echo "${B_RED}❌${NO_COLOR} Ошибка запуска мониторинга. Проверь переменные окружения или логи."
+              echo -e "${B_RED}❌${NO_COLOR} Ошибка запуска мониторинга. Проверь переменные окружения или логи."
             fi
             ;;
 
@@ -225,7 +213,7 @@ while true; do
               echo "$PROPOSAL_PID" > "$PROPOSAL_PID_FILE"
               echo "✅ Мониторинг запущен. PID сохранён в $PROPOSAL_PID_FILE"
             else
-              echo "${B_RED}❌${NO_COLOR} Ошибка запуска мониторинга пропозалов. Проверь переменные окружения или логи."
+              echo -e "${B_RED}❌${NO_COLOR} Ошибка запуска мониторинга пропозалов. Проверь переменные окружения или логи."
             fi
             ;;
           3)
@@ -252,7 +240,7 @@ while true; do
             fi
             ;;
           4)
-            echo "${B_RED}⛔${NO_COLOR} Останавливаем мониторинг валидатора..."
+            echo -e "${B_RED}⛔${NO_COLOR} Останавливаем мониторинг валидатора..."
             if [ -f "$MONITOR_PID_FILE" ]; then
               PID=$(cat "$MONITOR_PID_FILE")
               if kill "$PID" > /dev/null 2>&1; then
@@ -267,7 +255,7 @@ while true; do
             fi
             ;;
           5)
-            echo "${B_RED}⛔${NO_COLOR} Останавливаем мониторинг пропозалов..."
+            echo -e "${B_RED}⛔${NO_COLOR} Останавливаем мониторинг пропозалов..."
             if [ -f "$PROPOSAL_PID_FILE" ]; then
               PID=$(cat "$PROPOSAL_PID_FILE")
               if kill "$PID" > /dev/null 2>&1; then
@@ -285,17 +273,17 @@ while true; do
             break
             ;;
           *)
-            echo "🚫 Неверный выбор, пожалуйста, выберите от 1 до 6."
+            echo -e "${B_RED}🚫${NO_COLOR} Неверный выбор, пожалуйста, выберите от 1 до 6."
             ;;
         esac
       done
       ;;
     7)
-      echo "${B_RED}❌${NO_COLOR} Выход из программы..."
+      echo -e "${B_RED}❌${NO_COLOR} Выход из программы..."
       break
       ;;
     *)
-      echo "🚫 Неверный выбор, пожалуйста, выберите пункт от 1 до 7."
+      echo -e "${B_RED}🚫${NO_COLOR} Неверный выбор, пожалуйста, выберите пункт от 1 до 7."
       ;;
   esac
 done
