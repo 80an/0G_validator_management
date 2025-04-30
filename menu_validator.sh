@@ -33,10 +33,12 @@ check_for_updates() {
     git fetch origin main &>/dev/null
     if ! git diff --quiet origin/main -- .; then
       echo -e "${B_YELLOW}⚠️ Обнаружены изменения в папке 0g/Validator. Рекомендуется обновить программу.${NO_COLOR}"
+      echo
       echo -e "${B_YELLOW}Для этого запустите скрипт техменю${NO_COLOR}"
+      echo
       echo -e "source <(wget -qO- 'https://raw.githubusercontent.com/80an/Nodes/refs/heads/main/0g/Validator/tech_menu.sh')"
+      echo
       echo -e "${B_YELLOW}и выберите пункт меню 'Установка / обновление программы'.${NO_COLOR}"
-      sleep 10
     else
       echo -e "${B_GREEN}✅ Все файлы актуальны в папке 0g/Validator, изменений не обнаружено.${NO_COLOR}"
     fi
@@ -277,6 +279,7 @@ clear  # Очистка экрана
     7)
       echo
       echo -e "${B_RED}❌${NO_COLOR} Выход из программы..."
+      echo
       break
       ;;
     *)
