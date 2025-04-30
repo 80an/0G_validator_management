@@ -72,7 +72,9 @@ clear  # Очистка экрана
 
   case $choice in
     1)
+      echo
       echo -e "${B_YELLOW}💰${NO_COLOR} Забрать комиссии и реварды валидатора"
+      echo
       echo "$KEYRING_PASSWORD" | 0gchaind tx distribution withdraw-rewards "$VALIDATOR_ADDRESS" \
         --chain-id="zgtendermint_16600-2" \
         --from "$WALLET_NAME" \
@@ -81,14 +83,24 @@ clear  # Очистка экрана
         --gas-prices=0.003ua0gi \
         --gas-adjustment=1.8 \
         -y
+      echo
+      read -p "Нажмите Enter для возврата в меню..."
       ;;
     2)
+      echo
       echo -e "${B_GREEN}💸${NO_COLOR} Забрать все реварды со всех кошельков"
+      echo
       source "$HOME/0g/Validator/all_reward.sh"
+      echo
+      read -p "Нажмите Enter для возврата в меню..."
       ;;
     3)
+      echo
       echo -e "${B_PURPLE}📥${NO_COLOR} Делегировать со всех кошельков в своего валидатора"
+      echo
       source "$HOME/0g/Validator/all_delegation.sh"
+      echo
+      read -p "Нажмите Enter для возврата в меню..."
       ;;
     4)
             # === Проверка на текущие активные голосования в периоде депозита ===
@@ -97,12 +109,14 @@ clear  # Очистка экрана
       # Если активных предложений нет (значение 0), выходим в основное меню
       if [ "$active_proposals" -eq 0 ]; then
         echo -e "${B_RED}❌${NO_COLOR} В данный момент нет активных голосований!"
-             
+      echo
+      read -p "Нажмите Enter для возврата в меню..."       
       # Возврат в главное меню
       validator
       
       fi
         echo -e "${B_CYAN}🗳${NO_COLOR} Голосование по пропозалу"
+        echo
         read -p "Введите номер пропозала: " proposal
         read -p "Введите ваш голос (yes/no/abstain/no_with_veto): " vote
         echo "$KEYRING_PASSWORD" | 0gchaind tx gov vote "$proposal" "$vote" \
@@ -112,6 +126,8 @@ clear  # Очистка экрана
           --gas-prices=0.003ua0gi \
           --gas-adjustment=1.8 \
           -y
+         echo
+         read -p "Нажмите Enter для возврата в меню..."
       ;;
     5)
       echo "🚪 Вызволить из тюрьмы"
@@ -122,6 +138,8 @@ clear  # Очистка экрана
         --gas-prices=0.003ua0gi \
         --gas-adjustment=1.8 \
         -y
+        echo
+        read -p "Нажмите Enter для возврата в меню..."
       ;;
     6)
         # Проверка наличия переменных Telegram в env-файле (только наличие строк)
@@ -275,6 +293,8 @@ clear  # Очистка экрана
             ;;
         esac
       done
+      echo
+      read -p "Нажмите Enter для возврата в меню..."
       ;;
     7)
       echo
