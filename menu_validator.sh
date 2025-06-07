@@ -43,7 +43,7 @@ check_for_updates() {
       echo -e "${B_GREEN}✅ Все файлы актуальны в папке 0g/Validator, изменений не обнаружено.${NO_COLOR}"
     fi
   else
-    echo "${B_RED}❌${NO_COLOR} Ошибка: не найден git-репозиторий в $HOME/0g/Validator."
+    echo -e "${B_RED}❌${NO_COLOR} Ошибка: не найден git-репозиторий в $HOME/0g/Validator."
   fi
 }
 
